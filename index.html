@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer - Display Only</title>
+    <title>Pomodoro Timer - Display</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
@@ -321,6 +321,55 @@
     </div>
 
     <script>
+        // Configuration - EDIT THESE VALUES
+        const CONFIG = {
+            workMinutes: 25,
+            shortBreakMinutes: 5,
+            longBreakMinutes: 15,
+            cyclesBeforeLongBreak: 4,
+            autoStart: true, // Set to true to start automatically
+            lightningEffect: true,
+            soundEnabled: true,
+            chimeVolume: 0.3
+        };
+
+        // Audio context for chimes
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const chimeFrequencies = {
+            transition: [523.25, 659.25, 783.99],
+            longbreak: [392.00, 493.88, 587.33, 698.46],
+            cycle: [523.25, 698.46, 880.00]
+        };
+
+        function playChime(type = 'transition') {
+            if (!CONFIG.soundEnabled) return;
+            
+            const frequencies = chimeFrequencies[type] || chimeFrequencies.transition;
+            const now = audioContext.currentTime;
+            const duration = 0.4;
+            const gap = 0.15;
+            
+            frequencies.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                
+                const startTime = now + (index * gap);
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(CONFIG.chimeVolume, startTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            });
+        }
+
         // Latin phrases
         const latinPhrases = {
             work: ["Tempus Fugit", "Labor Omnia Vincit", "Scientia Potentia Est", "Per Aspera Ad Astra", "Ars Longa, Vita Brevis"],
@@ -330,6 +379,14 @@
 
         // Roman numerals
         const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+        // State
+        let currentSession = 'work';
+        let currentCycle = 1;
+        let totalSeconds = CONFIG.workMinutes * 60;
+        let remainingSeconds = totalSeconds;
+        let isRunning = CONFIG.autoStart;
+        let interval = null;
 
         // Elements
         const timeDisplay = document.getElementById('timeDisplay');
@@ -350,100 +407,132 @@
             return phrases[Math.floor(Math.random() * phrases.length)];
         }
 
-        function updateDisplay(state) {
+        function updateDisplay() {
             // Update time
-            const minutes = Math.floor(state.remainingSeconds / 60);
-            const seconds = state.remainingSeconds % 60;
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
             timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
             // Update progress ring
-            const progress = (state.totalSeconds - state.remainingSeconds) / state.totalSeconds;
+            const progress = (totalSeconds - remainingSeconds) / totalSeconds;
             const offset = circumference * (1 - progress);
             progressRing.style.strokeDashoffset = offset;
             
             // Update cycle counter
-            const romanCycle = romanNumerals[state.currentCycle - 1] || state.currentCycle.toString();
-            const romanTotal = romanNumerals[3] || '4'; // Default to 4 cycles
+            const romanCycle = romanNumerals[currentCycle - 1] || currentCycle.toString();
+            const romanTotal = romanNumerals[CONFIG.cyclesBeforeLongBreak - 1] || CONFIG.cyclesBeforeLongBreak.toString();
             cycleCounter.textContent = `Cycle ${romanCycle} of ${romanTotal}`;
+        }
+
+        function triggerLightning() {
+            if (CONFIG.lightningEffect) {
+                lightningFlash.classList.remove('active');
+                void lightningFlash.offsetWidth;
+                lightningFlash.classList.add('active');
+            }
+        }
+
+        function switchSession() {
+            // Add transition animation
+            timerContainer.classList.add('transitioning');
+            triggerLightning();
+            setTimeout(() => timerContainer.classList.remove('transitioning'), 2000);
             
-            // Update session
-            if (state.currentSession === 'work') {
+            // Determine next session and play appropriate chime
+            if (currentSession === 'work') {
+                if (currentCycle % CONFIG.cyclesBeforeLongBreak === 0) {
+                    playChime('longbreak');
+                    currentSession = 'long-break';
+                    totalSeconds = CONFIG.longBreakMinutes * 60;
+                    sessionLabel.textContent = '— Long Break —';
+                    sessionLabel.className = 'session-label long-break';
+                    progressRing.className = 'progress-ring-circle progress-ring-fill long-break';
+                    latinPhrase.textContent = getRandomPhrase('longBreak');
+                } else {
+                    playChime('transition');
+                    currentSession = 'break';
+                    totalSeconds = CONFIG.shortBreakMinutes * 60;
+                    sessionLabel.textContent = '— Short Break —';
+                    sessionLabel.className = 'session-label break';
+                    progressRing.className = 'progress-ring-circle progress-ring-fill break';
+                    latinPhrase.textContent = getRandomPhrase('break');
+                }
+            } else {
+                // Entering work session
+                if (currentSession === 'long-break') {
+                    playChime('cycle');
+                    currentCycle = 1;
+                } else {
+                    playChime('transition');
+                    currentCycle++;
+                }
+                currentSession = 'work';
+                totalSeconds = CONFIG.workMinutes * 60;
                 sessionLabel.textContent = '— Focus Time —';
                 sessionLabel.className = 'session-label work';
                 progressRing.className = 'progress-ring-circle progress-ring-fill work';
-            } else if (state.currentSession === 'break') {
-                sessionLabel.textContent = '— Short Break —';
-                sessionLabel.className = 'session-label break';
-                progressRing.className = 'progress-ring-circle progress-ring-fill break';
-            } else if (state.currentSession === 'long-break') {
-                sessionLabel.textContent = '— Long Break —';
-                sessionLabel.className = 'session-label long-break';
-                progressRing.className = 'progress-ring-circle progress-ring-fill long-break';
+                latinPhrase.textContent = getRandomPhrase('work');
+            }
+            
+            remainingSeconds = totalSeconds;
+            updateDisplay();
+        }
+
+        function tick() {
+            if (remainingSeconds > 0) {
+                remainingSeconds--;
+                updateDisplay();
+            } else {
+                switchSession();
             }
         }
 
-        function triggerTransition() {
-            timerContainer.classList.add('transitioning');
-            lightningFlash.classList.remove('active');
-            void lightningFlash.offsetWidth;
-            lightningFlash.classList.add('active');
-            setTimeout(() => timerContainer.classList.remove('transitioning'), 2000);
+        // Initialize
+        updateDisplay();
+        latinPhrase.textContent = getRandomPhrase('work');
+        
+        // Start timer if autoStart is enabled
+        if (CONFIG.autoStart) {
+            interval = setInterval(tick, 1000);
         }
 
-        // Listen for state changes from control panel
-        let lastSession = 'work';
-        
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'pomodoroState') {
-                const state = JSON.parse(e.newValue);
-                updateDisplay(state);
-                
-                // Trigger transition effect when session changes
-                if (state.currentSession !== lastSession) {
-                    triggerTransition();
-                    lastSession = state.currentSession;
-                    
-                    // Update Latin phrase
-                    if (state.currentSession === 'work') {
-                        latinPhrase.textContent = getRandomPhrase('work');
-                    } else if (state.currentSession === 'break') {
-                        latinPhrase.textContent = getRandomPhrase('break');
-                    } else if (state.currentSession === 'long-break') {
-                        latinPhrase.textContent = getRandomPhrase('longBreak');
+        // Keyboard shortcuts for control (optional - useful for testing)
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (isRunning) {
+                    // Pause
+                    isRunning = false;
+                    if (interval) {
+                        clearInterval(interval);
+                        interval = null;
                     }
+                } else {
+                    // Start
+                    isRunning = true;
+                    interval = setInterval(tick, 1000);
                 }
+            } else if (e.code === 'KeyR') {
+                // Reset
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
+                currentSession = 'work';
+                currentCycle = 1;
+                totalSeconds = CONFIG.workMinutes * 60;
+                remainingSeconds = totalSeconds;
+                sessionLabel.textContent = '— Focus Time —';
+                sessionLabel.className = 'session-label work';
+                progressRing.className = 'progress-ring-circle progress-ring-fill work';
+                latinPhrase.textContent = getRandomPhrase('work');
+                updateDisplay();
+                isRunning = false;
+            } else if (e.code === 'KeyS') {
+                // Skip
+                switchSession();
             }
         });
-
-        // Initial load
-        const savedState = localStorage.getItem('pomodoroState');
-        if (savedState) {
-            const state = JSON.parse(savedState);
-            updateDisplay(state);
-            lastSession = state.currentSession;
-        }
-
-        // Poll for updates (backup in case storage events don't fire)
-        setInterval(() => {
-            const state = localStorage.getItem('pomodoroState');
-            if (state) {
-                const parsedState = JSON.parse(state);
-                updateDisplay(parsedState);
-                
-                if (parsedState.currentSession !== lastSession) {
-                    triggerTransition();
-                    lastSession = parsedState.currentSession;
-                    
-                    if (parsedState.currentSession === 'work') {
-                        latinPhrase.textContent = getRandomPhrase('work');
-                    } else if (parsedState.currentSession === 'break') {
-                        latinPhrase.textContent = getRandomPhrase('break');
-                    } else if (parsedState.currentSession === 'long-break') {
-                        latinPhrase.textContent = getRandomPhrase('longBreak');
-                    }
-                }
-            }
-        }, 100);
     </script>
 </body>
 </html>
