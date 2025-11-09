@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Academia Pomodoro Timer</title>
+    <title>Pomodoro Timer - Display Only</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
 
         body {
             font-family: 'Crimson Text', serif;
-            background: transparent; /* Transparent background for overlay */
+            background: transparent;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -44,7 +44,7 @@
         .timer-container {
             text-align: center;
             padding: 40px;
-            --bg-opacity: 0.75; /* ADJUST THIS VALUE: 0 = transparent, 1 = solid */
+            --bg-opacity: 0.75;
             background: 
                 linear-gradient(135deg, 
                     rgba(25, 38, 31, var(--bg-opacity)) 0%, 
@@ -54,15 +54,17 @@
             box-shadow: 
                 inset 0 0 30px rgba(212, 175, 100, 0.1),
                 0 10px 40px rgba(0, 0, 0, 0.8),
-                0 2px 4px rgba(0, 0, 0, 0.5);
+                0 2px 4px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(212, 175, 100, 0.4),
+                inset 0 0 40px rgba(212, 175, 100, 0.15);
             min-width: 400px;
             position: relative;
-            border: 2px solid;
+            border: 3px solid rgba(212, 175, 100, 0.95);
             border-image: linear-gradient(
                 135deg,
-                rgba(212, 175, 100, 0.6),
-                rgba(212, 175, 100, 0.4),
-                rgba(212, 175, 100, 0.6)
+                rgba(212, 175, 100, 1),
+                rgba(255, 215, 130, 0.9),
+                rgba(212, 175, 100, 1)
             ) 1;
         }
 
@@ -71,10 +73,15 @@
         .timer-container::after {
             content: '❦';
             position: absolute;
-            font-size: 24px;
-            color: rgba(212, 175, 100, 0.6); /* More visible gold */
+            font-size: 32px;
+            color: rgba(212, 175, 100, 1);
             font-family: 'Cinzel', serif;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 
+                0 0 15px rgba(212, 175, 100, 0.9),
+                0 0 25px rgba(212, 175, 100, 0.6),
+                0 2px 4px rgba(0, 0, 0, 0.8),
+                0 4px 8px rgba(0, 0, 0, 0.6);
+            filter: drop-shadow(0 0 8px rgba(212, 175, 100, 0.8));
         }
 
         .timer-container::before {
@@ -88,43 +95,46 @@
             transform: rotate(180deg);
         }
 
-        /* Session label with vintage typography */
+        /* Session label */
         .session-label {
             font-family: 'Cinzel', serif;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
-            color: #1a2f1f; /* Dark green-black for visibility */
+            color: #f4e8d0;
             text-transform: uppercase;
             letter-spacing: 4px;
             margin-bottom: 20px;
             position: relative;
             transition: all 0.5s ease;
             text-shadow: 
-                1px 1px 2px rgba(255, 255, 255, 0.1),
-                0 0 10px rgba(212, 175, 100, 0.2);
+                0 0 10px rgba(212, 175, 100, 0.8),
+                0 0 20px rgba(212, 175, 100, 0.5),
+                2px 2px 4px rgba(0, 0, 0, 0.9),
+                0 2px 8px rgba(0, 0, 0, 0.7);
+            filter: drop-shadow(0 0 6px rgba(212, 175, 100, 0.6));
         }
 
         .session-label::before,
         .session-label::after {
             content: '—';
             margin: 0 10px;
-            opacity: 0.8;
-            color: #1a2f1f;
+            opacity: 1;
+            color: rgba(212, 175, 100, 1);
         }
 
         .session-label.work {
-            color: #1a2f1f; /* Very dark green */
+            color: #f4e8d0;
         }
 
         .session-label.break {
-            color: #3d2f0f; /* Dark golden brown */
+            color: #ffd478;
         }
 
         .session-label.long-break {
-            color: #3d1a1a; /* Dark burgundy */
+            color: #ffb8b8;
         }
 
-        /* Time display with elegant serif font */
+        /* Time display */
         .time-display {
             font-family: 'Crimson Text', serif;
             font-size: 86px;
@@ -150,146 +160,100 @@
             transform: rotate(-90deg);
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+            filter: drop-shadow(0 0 8px rgba(212, 175, 100, 0.6)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
         }
 
         .progress-ring-circle {
             fill: transparent;
-            stroke-width: 3;
+            stroke-width: 5;
             transition: stroke-dashoffset 1s linear;
         }
 
         .progress-ring-bg {
-            stroke: rgba(212, 175, 100, 0.15);
+            stroke: rgba(212, 175, 100, 0.3);
+            stroke-width: 4;
         }
 
         .progress-ring-fill {
             stroke-linecap: round;
-            filter: drop-shadow(0 0 6px currentColor);
+            filter: 
+                drop-shadow(0 0 10px currentColor) 
+                drop-shadow(0 0 20px currentColor);
         }
 
         .progress-ring-fill.work {
-            stroke: #2d5f3f;
+            stroke: #4a9d6a;
         }
 
         .progress-ring-fill.break {
-            stroke: #d4af64;
+            stroke: #f4d764;
         }
 
         .progress-ring-fill.long-break {
-            stroke: #8b3a3a;
+            stroke: #d46a6a;
         }
 
-        /* Ornamental details around the progress ring */
+        /* Ornamental details */
         .ornament {
             position: absolute;
             font-family: 'Cinzel', serif;
-            color: rgba(212, 175, 100, 0.7); /* More visible */
-            font-size: 20px; /* Slightly larger */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            color: rgba(212, 175, 100, 1);
+            font-size: 28px;
+            text-shadow: 
+                0 0 15px rgba(212, 175, 100, 0.9),
+                0 0 25px rgba(212, 175, 100, 0.6),
+                0 2px 4px rgba(0, 0, 0, 0.8),
+                0 4px 8px rgba(0, 0, 0, 0.6);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 100, 0.8));
         }
 
-        .ornament-top { top: -10px; left: 50%; transform: translateX(-50%); }
-        .ornament-bottom { bottom: -10px; left: 50%; transform: translateX(-50%); }
-        .ornament-left { left: -10px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-        .ornament-right { right: -10px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        .ornament-top { top: -15px; left: 50%; transform: translateX(-50%); }
+        .ornament-bottom { bottom: -15px; left: 50%; transform: translateX(-50%); }
+        .ornament-left { left: -15px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+        .ornament-right { right: -15px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
 
-        /* Cycle counter with decorative elements */
+        /* Cycle counter */
         .cycle-counter {
             margin-top: 25px;
             font-size: 16px;
-            color: #2a3f2f; /* Darker for visibility */
+            color: #d4af64;
             letter-spacing: 2px;
             font-family: 'Crimson Text', serif;
             font-weight: 600;
-            text-shadow: 0 1px 2px rgba(212, 175, 100, 0.2);
+            text-shadow: 
+                0 0 8px rgba(212, 175, 100, 0.6),
+                0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
         .cycle-counter::before {
             content: '§ ';
             margin-right: 5px;
-            color: rgba(212, 175, 100, 0.7);
+            color: rgba(212, 175, 100, 1);
         }
 
         .cycle-counter::after {
             content: ' §';
             margin-left: 5px;
-            color: rgba(212, 175, 100, 0.7);
+            color: rgba(212, 175, 100, 1);
         }
 
-        /* Latin phrase for atmosphere */
+        /* Latin phrase */
         .latin-phrase {
             margin-top: 15px;
             font-size: 14px;
-            color: #3a4f3f; /* Darker for visibility */
+            color: rgba(212, 175, 100, 0.85);
             font-style: italic;
-            letter-spacing: 1px;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(212, 175, 100, 0.2);
+            letter-spacing: 2px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        /* Minimal mode for corner overlay */
-        .minimal-mode .progress-ring {
-            display: none;
-        }
-
-        .minimal-mode .timer-container {
-            background: linear-gradient(135deg, 
-                rgba(25, 38, 31, calc(var(--bg-opacity) * 0.9)) 0%, 
-                rgba(42, 50, 45, calc(var(--bg-opacity) * 0.85)) 100%);
-            padding: 25px 35px;
-            min-width: auto;
-        }
-
-        .minimal-mode .timer-container::before,
-        .minimal-mode .timer-container::after,
-        .minimal-mode .latin-phrase {
-            display: none;
-        }
-
-        .minimal-mode .time-display {
-            font-size: 56px;
-            margin: 15px 0;
-        }
-
-        .minimal-mode .session-label {
-            font-size: 12px;
-            letter-spacing: 3px;
-        }
-
-        /* Corner positioning */
-        .top-right {
-            position: fixed;
-            top: 40px;
-            right: 40px;
-        }
-
-        .top-left {
-            position: fixed;
-            top: 40px;
-            left: 40px;
-        }
-
-        .bottom-right {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-        }
-
-        .bottom-left {
-            position: fixed;
-            bottom: 40px;
-            left: 40px;
-        }
-
-        /* Lightning flash effect for transitions */
-        @keyframes lightning-flash {
-            0% { opacity: 0; }
+        /* Lightning flash effect */
+        @keyframes lightning {
+            0%, 100% { opacity: 0; }
             10% { opacity: 0.3; }
             20% { opacity: 0; }
             30% { opacity: 0.5; }
-            40% { opacity: 0; }
-            100% { opacity: 0; }
+            40%, 50% { opacity: 0; }
         }
 
         .lightning-flash {
@@ -298,74 +262,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at center, 
-                rgba(212, 175, 100, 0.2), 
-                transparent);
+            background: rgba(212, 175, 100, 0.1);
             pointer-events: none;
             opacity: 0;
-            z-index: 1000;
         }
 
         .lightning-flash.active {
-            animation: lightning-flash 1s ease-out;
+            animation: lightning 1s ease-out;
         }
 
-        /* Transition pulse */
-        @keyframes pulse-glow {
-            0% { 
-                box-shadow: 
-                    inset 0 0 30px rgba(212, 175, 100, 0.1),
-                    0 10px 40px rgba(0, 0, 0, 0.8),
-                    0 2px 4px rgba(0, 0, 0, 0.5);
-            }
-            50% { 
-                box-shadow: 
-                    inset 0 0 40px rgba(212, 175, 100, 0.3),
-                    0 10px 50px rgba(0, 0, 0, 0.9),
-                    0 2px 6px rgba(0, 0, 0, 0.6),
-                    0 0 30px rgba(212, 175, 100, 0.2);
-            }
-            100% { 
-                box-shadow: 
-                    inset 0 0 30px rgba(212, 175, 100, 0.1),
-                    0 10px 40px rgba(0, 0, 0, 0.8),
-                    0 2px 4px rgba(0, 0, 0, 0.5);
-            }
+        /* Transition animation */
+        @keyframes fadeTransition {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
-        .transitioning {
-            animation: pulse-glow 2s ease-in-out;
-        }
-
-        /* Controls */
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            background: rgba(25, 38, 31, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid rgba(212, 175, 100, 0.3);
-        }
-
-        .controls button {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #2d5f3f, #1a3d2a);
-            border: 1px solid rgba(212, 175, 100, 0.3);
-            border-radius: 4px;
-            color: #f4e8d0;
-            cursor: pointer;
-            font-family: 'Crimson Text', serif;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .controls button:hover {
-            background: linear-gradient(135deg, #3a7d50, #2d5f3f);
-            box-shadow: 0 2px 10px rgba(212, 175, 100, 0.2);
+        .timer-container.transitioning {
+            animation: fadeTransition 2s ease-in-out;
         }
     </style>
 </head>
@@ -373,216 +286,50 @@
     <!-- Lightning flash overlay -->
     <div class="lightning-flash" id="lightningFlash"></div>
 
-    <!-- Timer Display -->
+    <!-- Main timer container -->
     <div class="timer-container" id="timerContainer">
+        <!-- Session label -->
         <div class="session-label work" id="sessionLabel">— Focus Time —</div>
         
+        <!-- Progress ring -->
         <div class="progress-ring">
             <svg>
-                <circle class="progress-ring-circle progress-ring-bg"
-                        cx="160" cy="160" r="150"/>
-                <circle class="progress-ring-circle progress-ring-fill work"
-                        id="progressRing"
-                        cx="160" cy="160" r="150"
-                        stroke-dasharray="942.478"
-                        stroke-dashoffset="0"/>
+                <circle class="progress-ring-circle progress-ring-bg" 
+                        cx="160" cy="160" r="150"></circle>
+                <circle class="progress-ring-circle progress-ring-fill work" 
+                        cx="160" cy="160" r="150" 
+                        id="progressRing"></circle>
             </svg>
+            
+            <!-- Ornamental symbols -->
+            <div class="ornament ornament-top">✦</div>
+            <div class="ornament ornament-bottom">✦</div>
+            <div class="ornament ornament-left">✦</div>
+            <div class="ornament ornament-right">✦</div>
+            
+            <!-- Time display -->
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div class="time-display" id="timeDisplay">25:00</div>
             </div>
-            <!-- Ornamental details -->
-            <span class="ornament ornament-top">✦</span>
-            <span class="ornament ornament-bottom">✦</span>
-            <span class="ornament ornament-left">❦</span>
-            <span class="ornament ornament-right">❦</span>
         </div>
         
+        <!-- Cycle counter -->
         <div class="cycle-counter" id="cycleCounter">Cycle I of IV</div>
+        
+        <!-- Latin phrase -->
         <div class="latin-phrase" id="latinPhrase">Tempus Fugit</div>
     </div>
 
-    <!-- Controls for testing - Remove for final recording -->
-    <div class="controls" id="controls">
-        <button onclick="startTimer()">Start</button>
-        <button onclick="pauseTimer()">Pause</button>
-        <button onclick="resetTimer()">Reset</button>
-        <button onclick="skipSession()">Skip</button>
-        <button onclick="toggleMinimal()">Minimal</button>
-        <button onclick="changePosition()">Position</button>
-        <button onclick="testChime()">Test Chime</button>
-        <button onclick="toggleSound()" id="soundToggle">Mute</button>
-    </div>
-
     <script>
-        // Configuration
-        const CONFIG = {
-            workMinutes: 25,
-            shortBreakMinutes: 5,
-            longBreakMinutes: 15,
-            cyclesBeforeLongBreak: 4,
-            autoStart: false, // Set to true for video recording
-            showControls: true, // Set to false for video recording
-            minimalMode: false, // Set to true for corner overlay
-            position: 'center', // options: center, top-right, top-left, bottom-right, bottom-left
-            lightningEffect: true, // Lightning flash on transitions
-            soundEnabled: true, // Enable/disable chimes
-            soundVolume: 0.3 // Volume from 0 to 1
-        };
-
-        // Audio Context for generating chimes
-        let audioContext = null;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        // Create a soft chime sound using Web Audio API (royalty-free)
-        function playChime(type = 'transition') {
-            if (!CONFIG.soundEnabled) return;
-            
-            initAudio();
-            
-            const now = audioContext.currentTime;
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            if (type === 'transition') {
-                // Soft, pleasant chime for focus/break transitions
-                oscillator.frequency.setValueAtTime(523.25, now); // C5
-                oscillator.frequency.exponentialRampToValueAtTime(659.25, now + 0.3); // E5
-                
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(CONFIG.soundVolume, now + 0.01);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
-                
-                oscillator.start(now);
-                oscillator.stop(now + 1.5);
-                
-                // Add a harmonic for richness
-                const oscillator2 = audioContext.createOscillator();
-                const gainNode2 = audioContext.createGain();
-                
-                oscillator2.connect(gainNode2);
-                gainNode2.connect(audioContext.destination);
-                
-                oscillator2.frequency.setValueAtTime(1046.5, now); // C6
-                oscillator2.frequency.exponentialRampToValueAtTime(1318.5, now + 0.3); // E6
-                
-                gainNode2.gain.setValueAtTime(0, now);
-                gainNode2.gain.linearRampToValueAtTime(CONFIG.soundVolume * 0.3, now + 0.01);
-                gainNode2.gain.exponentialRampToValueAtTime(0.01, now + 1);
-                
-                oscillator2.start(now);
-                oscillator2.stop(now + 1);
-                
-            } else if (type === 'cycle') {
-                // Double chime for cycle completion
-                // First chime
-                oscillator.frequency.setValueAtTime(659.25, now); // E5
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(CONFIG.soundVolume, now + 0.01);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                
-                oscillator.start(now);
-                oscillator.stop(now + 0.5);
-                
-                // Second chime (slightly delayed)
-                setTimeout(() => {
-                    const osc2 = audioContext.createOscillator();
-                    const gain2 = audioContext.createGain();
-                    
-                    osc2.connect(gain2);
-                    gain2.connect(audioContext.destination);
-                    
-                    osc2.frequency.setValueAtTime(783.99, audioContext.currentTime); // G5
-                    gain2.gain.setValueAtTime(0, audioContext.currentTime);
-                    gain2.gain.linearRampToValueAtTime(CONFIG.soundVolume, audioContext.currentTime + 0.01);
-                    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.7);
-                    
-                    osc2.start(audioContext.currentTime);
-                    osc2.stop(audioContext.currentTime + 0.7);
-                }, 300);
-                
-            } else if (type === 'longbreak') {
-                // Special three-note chime for long break
-                const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-                
-                notes.forEach((freq, index) => {
-                    setTimeout(() => {
-                        const osc = audioContext.createOscillator();
-                        const gain = audioContext.createGain();
-                        
-                        osc.connect(gain);
-                        gain.connect(audioContext.destination);
-                        
-                        osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-                        gain.gain.setValueAtTime(0, audioContext.currentTime);
-                        gain.gain.linearRampToValueAtTime(CONFIG.soundVolume * 0.8, audioContext.currentTime + 0.01);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-                        
-                        osc.start(audioContext.currentTime);
-                        osc.stop(audioContext.currentTime + 1);
-                    }, index * 200);
-                });
-            }
-        }
-
-        // Test chime function for controls
-        function testChime() {
-            playChime('transition');
-        }
-
-        // Add volume control function
-        function adjustVolume(value) {
-            CONFIG.soundVolume = parseFloat(value);
-        }
-
-        // Add sound toggle function
-        function toggleSound() {
-            CONFIG.soundEnabled = !CONFIG.soundEnabled;
-            const btn = document.getElementById('soundToggle');
-            if (btn) {
-                btn.textContent = CONFIG.soundEnabled ? 'Mute' : 'Unmute';
-            }
-        }
-
-        // Latin phrases for atmosphere
+        // Latin phrases
         const latinPhrases = {
-            work: [
-                "Tempus Fugit", // Time Flies
-                "Labor Omnia Vincit", // Work Conquers All
-                "Scientia Potentia Est", // Knowledge is Power
-                "Per Aspera Ad Astra", // Through Hardship to the Stars
-                "Ars Longa, Vita Brevis" // Art is Long, Life is Short
-            ],
-            break: [
-                "Otium Cum Dignitate", // Leisure with Dignity
-                "In Quiete Vis", // In Quietness is Strength
-                "Requiescat", // Let it Rest
-                "Momento Vivere", // Remember to Live
-            ],
-            longBreak: [
-                "Mens Sana in Corpore Sano", // Sound Mind in Sound Body
-                "Carpe Diem", // Seize the Day
-                "Festina Lente", // Make Haste Slowly
-            ]
+            work: ["Tempus Fugit", "Labor Omnia Vincit", "Scientia Potentia Est", "Per Aspera Ad Astra", "Ars Longa, Vita Brevis"],
+            break: ["Otium Cum Dignitate", "In Quiete Vis", "Requiescat", "Momento Vivere"],
+            longBreak: ["Mens Sana in Corpore Sano", "Carpe Diem", "Festina Lente"]
         };
 
-        // Roman numerals for cycles
+        // Roman numerals
         const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
-
-        // State
-        let currentSession = 'work';
-        let currentCycle = 1;
-        let totalSeconds = CONFIG.workMinutes * 60;
-        let remainingSeconds = totalSeconds;
-        let isRunning = false;
-        let interval = null;
 
         // Elements
         const timeDisplay = document.getElementById('timeDisplay');
@@ -598,174 +345,105 @@
         const circumference = 2 * Math.PI * radius;
         progressRing.style.strokeDasharray = circumference;
 
-        function updateDisplay() {
-            // Update time
-            const minutes = Math.floor(remainingSeconds / 60);
-            const seconds = remainingSeconds % 60;
-            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            // Update progress ring
-            const progress = (totalSeconds - remainingSeconds) / totalSeconds;
-            const offset = circumference * (1 - progress);
-            progressRing.style.strokeDashoffset = offset;
-            
-            // Update cycle counter with Roman numerals
-            const romanCycle = romanNumerals[currentCycle - 1] || currentCycle.toString();
-            const romanTotal = romanNumerals[CONFIG.cyclesBeforeLongBreak - 1] || CONFIG.cyclesBeforeLongBreak.toString();
-            cycleCounter.textContent = `Cycle ${romanCycle} of ${romanTotal}`;
-        }
-
         function getRandomPhrase(type) {
             const phrases = latinPhrases[type] || latinPhrases.work;
             return phrases[Math.floor(Math.random() * phrases.length)];
         }
 
-        function triggerLightning() {
-            if (CONFIG.lightningEffect) {
-                lightningFlash.classList.remove('active');
-                void lightningFlash.offsetWidth; // Force reflow
-                lightningFlash.classList.add('active');
-            }
-        }
-
-        function switchSession() {
-            // Add transition animation
-            timerContainer.classList.add('transitioning');
-            triggerLightning();
-            setTimeout(() => timerContainer.classList.remove('transitioning'), 2000);
+        function updateDisplay(state) {
+            // Update time
+            const minutes = Math.floor(state.remainingSeconds / 60);
+            const seconds = state.remainingSeconds % 60;
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Determine next session and play appropriate chime
-            if (currentSession === 'work') {
-                if (currentCycle % CONFIG.cyclesBeforeLongBreak === 0) {
-                    // Entering long break - play special chime
-                    playChime('longbreak');
-                    currentSession = 'long-break';
-                    totalSeconds = CONFIG.longBreakMinutes * 60;
-                    sessionLabel.textContent = '— Long Break —';
-                    sessionLabel.className = 'session-label long-break';
-                    progressRing.className = 'progress-ring-circle progress-ring-fill long-break';
-                    latinPhrase.textContent = getRandomPhrase('longBreak');
-                } else {
-                    // Entering short break - play transition chime
-                    playChime('transition');
-                    currentSession = 'break';
-                    totalSeconds = CONFIG.shortBreakMinutes * 60;
-                    sessionLabel.textContent = '— Short Break —';
-                    sessionLabel.className = 'session-label break';
-                    progressRing.className = 'progress-ring-circle progress-ring-fill break';
-                    latinPhrase.textContent = getRandomPhrase('break');
-                }
-            } else {
-                // Entering work session
-                if (currentSession === 'long-break') {
-                    // Completed a full cycle - play cycle chime
-                    playChime('cycle');
-                    currentCycle = 1;
-                } else {
-                    // Regular transition back to work
-                    playChime('transition');
-                    currentCycle++;
-                }
-                currentSession = 'work';
-                totalSeconds = CONFIG.workMinutes * 60;
+            // Update progress ring
+            const progress = (state.totalSeconds - state.remainingSeconds) / state.totalSeconds;
+            const offset = circumference * (1 - progress);
+            progressRing.style.strokeDashoffset = offset;
+            
+            // Update cycle counter
+            const romanCycle = romanNumerals[state.currentCycle - 1] || state.currentCycle.toString();
+            const romanTotal = romanNumerals[3] || '4'; // Default to 4 cycles
+            cycleCounter.textContent = `Cycle ${romanCycle} of ${romanTotal}`;
+            
+            // Update session
+            if (state.currentSession === 'work') {
                 sessionLabel.textContent = '— Focus Time —';
                 sessionLabel.className = 'session-label work';
                 progressRing.className = 'progress-ring-circle progress-ring-fill work';
-                latinPhrase.textContent = getRandomPhrase('work');
-            }
-            
-            remainingSeconds = totalSeconds;
-            updateDisplay();
-            
-            // Auto-start next session if enabled
-            if (CONFIG.autoStart && isRunning) {
-                startTimer();
-            }
-        }
-
-        function tick() {
-            if (remainingSeconds > 0) {
-                remainingSeconds--;
-                updateDisplay();
-            } else {
-                switchSession();
+            } else if (state.currentSession === 'break') {
+                sessionLabel.textContent = '— Short Break —';
+                sessionLabel.className = 'session-label break';
+                progressRing.className = 'progress-ring-circle progress-ring-fill break';
+            } else if (state.currentSession === 'long-break') {
+                sessionLabel.textContent = '— Long Break —';
+                sessionLabel.className = 'session-label long-break';
+                progressRing.className = 'progress-ring-circle progress-ring-fill long-break';
             }
         }
 
-        function startTimer() {
-            if (!isRunning) {
-                isRunning = true;
-                interval = setInterval(tick, 1000);
-            }
+        function triggerTransition() {
+            timerContainer.classList.add('transitioning');
+            lightningFlash.classList.remove('active');
+            void lightningFlash.offsetWidth;
+            lightningFlash.classList.add('active');
+            setTimeout(() => timerContainer.classList.remove('transitioning'), 2000);
         }
 
-        function pauseTimer() {
-            isRunning = false;
-            if (interval) {
-                clearInterval(interval);
-                interval = null;
-            }
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            currentSession = 'work';
-            currentCycle = 1;
-            totalSeconds = CONFIG.workMinutes * 60;
-            remainingSeconds = totalSeconds;
-            sessionLabel.textContent = '— Focus Time —';
-            sessionLabel.className = 'session-label work';
-            progressRing.className = 'progress-ring-circle progress-ring-fill work';
-            latinPhrase.textContent = getRandomPhrase('work');
-            updateDisplay();
-        }
-
-        function skipSession() {
-            switchSession();
-        }
-
-        function toggleMinimal() {
-            timerContainer.classList.toggle('minimal-mode');
-        }
-
-        function changePosition() {
-            const positions = ['center', 'top-right', 'top-left', 'bottom-right', 'bottom-left'];
-            const currentPos = positions.find(pos => timerContainer.classList.contains(pos)) || 'center';
-            const currentIndex = positions.indexOf(currentPos);
-            const nextIndex = (currentIndex + 1) % positions.length;
-            
-            // Remove all position classes
-            positions.forEach(pos => timerContainer.classList.remove(pos));
-            
-            // Add new position
-            if (positions[nextIndex] !== 'center') {
-                timerContainer.classList.add(positions[nextIndex]);
-            }
-        }
-
-        // Initialize
-        updateDisplay();
-        latinPhrase.textContent = getRandomPhrase('work');
+        // Listen for state changes from control panel
+        let lastSession = 'work';
         
-        // Hide controls if configured
-        if (!CONFIG.showControls) {
-            document.getElementById('controls').style.display = 'none';
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'pomodoroState') {
+                const state = JSON.parse(e.newValue);
+                updateDisplay(state);
+                
+                // Trigger transition effect when session changes
+                if (state.currentSession !== lastSession) {
+                    triggerTransition();
+                    lastSession = state.currentSession;
+                    
+                    // Update Latin phrase
+                    if (state.currentSession === 'work') {
+                        latinPhrase.textContent = getRandomPhrase('work');
+                    } else if (state.currentSession === 'break') {
+                        latinPhrase.textContent = getRandomPhrase('break');
+                    } else if (state.currentSession === 'long-break') {
+                        latinPhrase.textContent = getRandomPhrase('longBreak');
+                    }
+                }
+            }
+        });
+
+        // Initial load
+        const savedState = localStorage.getItem('pomodoroState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            updateDisplay(state);
+            lastSession = state.currentSession;
         }
-        
-        // Apply initial position
-        if (CONFIG.position !== 'center') {
-            timerContainer.classList.add(CONFIG.position);
-        }
-        
-        // Apply minimal mode if configured
-        if (CONFIG.minimalMode) {
-            timerContainer.classList.add('minimal-mode');
-        }
-        
-        // Auto-start if configured
-        if (CONFIG.autoStart) {
-            startTimer();
-        }
+
+        // Poll for updates (backup in case storage events don't fire)
+        setInterval(() => {
+            const state = localStorage.getItem('pomodoroState');
+            if (state) {
+                const parsedState = JSON.parse(state);
+                updateDisplay(parsedState);
+                
+                if (parsedState.currentSession !== lastSession) {
+                    triggerTransition();
+                    lastSession = parsedState.currentSession;
+                    
+                    if (parsedState.currentSession === 'work') {
+                        latinPhrase.textContent = getRandomPhrase('work');
+                    } else if (parsedState.currentSession === 'break') {
+                        latinPhrase.textContent = getRandomPhrase('break');
+                    } else if (parsedState.currentSession === 'long-break') {
+                        latinPhrase.textContent = getRandomPhrase('longBreak');
+                    }
+                }
+            }
+        }, 100);
     </script>
 </body>
 </html>
